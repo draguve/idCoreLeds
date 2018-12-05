@@ -11,9 +11,9 @@ def signal_handler(sig, frame):
     p.terminate()
     sys.exit(0)
 
-CHUNK = 1024
+CHUNK = 256
 FORMAT = pyaudio.paInt16
-CHANNELS = 2
+CHANNELS = 1
 RATE = 44100
 
 signal.signal(signal.SIGINT, signal_handler)
@@ -26,12 +26,15 @@ stream = p.open(format=FORMAT,
                 rate=RATE,
                 input=True,
                 frames_per_buffer=CHUNK,
-                input_device_index=3) #change this to change device   
+                input_device_index=2) #change this to change device   
 
 while(True):
-    data = stream.read(CHUNK)
-    rms = audioop.rms(data, 2)
-    print(rms)
+    try:
+        data = stream.read(CHUNK)
+        rms = audioop.rms(data, 2)
+        print(rms)
+    except IOError as ex:
+        print("Error")
 
 stream.stop_stream()
 stream.close()
